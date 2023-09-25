@@ -1,8 +1,8 @@
 ---
 title: "BSMM-lab-2"
 subtitle: "BSMM 8740 Fall 2023"
-author: "Add your name here"
-date: "Add the date here"
+author: "Yamini Ponnambalam"
+date: "25 Sep 2023"
 format: html
 editor: visual
 self-contained: true
@@ -18,15 +18,73 @@ the_tate <- readr::read_delim("data/the-tate-collection.csv", ";", escape_double
 the_tate_artists <- readr::read_csv("data/the-tate-artists.csv")
 ```
 
+```{r}
+library(magrittr)     # the pipe
+library(tidyverse)    # for data wrangling + visualization
+library(tidymodels)   # for modeling
+library(gt)           # for making display tables
+library(gtExtras)     # helper functions for beautiful tables
+library(DataExplorer) #
+```
+
 ## Exercises
 
 ### Exercise 1
 
-The `the_tate` dataset has \_\_\_ unique artists who worked from \_\_\_ to \_\_\_. The works were acquired between the years \_\_\_ and \_\_\_.
+```{r}
+the_tate <- readr::read_delim("data/the-tate-collection.csv", ";", escape_double = FALSE, trim_ws = TRUE)
+```
+
+```{r}
+the_tate_artists <- readr::read_csv("data/the-tate-artists.csv")
+```
+
+```{r}
+ summarizing_tate_artists <- the_tate |>
+  dplyr::summarize(
+    unique_artists = n_distinct(artist),
+    min_date = min(year, na.rm = TRUE), 
+    max_date = max(year, na.rm = TRUE),
+    min_acquisition_year = min(acquisitionYear, na.rm = TRUE),
+    max_acquisition_year = max(acquisitionYear, na.rm = TRUE)
+    )
+ summarizing_tate_artists
+```
+
+```{r}
+DataExplorer::introduce(the_tate)
+```
+
+```{r}
+DataExplorer::plot_missing(the_tate)
+```
+
+The `the_tate` dataset has \_3336\_\_ unique artists who worked from \_1545\_\_ to \_2012\_\_. The works were acquired between the years \_1823\_\_ and \_2013\_\_.
 
 ### Exercise 2
 
-How number of works with missing dates is \_\_.
+```{r}
+the_missing_date_tates <- the_tate |>
+  filter(is.na(year)) 
+the_missing_date_tates
+```
+
+```{r}
+total_works_with_missing_dates <- nrow(the_missing_date_tates)
+total_works_with_missing_dates
+
+```
+
+```{r}
+missing_dates_by_artist <- table(the_missing_date_tates)
+missing_dates_by_artist_tibble <- as_tibble(missing_dates_by_artist) |>
+  rename(artist = .rownames, missing_dates_count = n) |>
+  arrange(desc(missing_dates_count))
+
+missing_dates_by_artist
+```
+
+How number of works with missing dates is \_5397\_.
 
 The number of artists whose works have missing dates is \_\_.
 
